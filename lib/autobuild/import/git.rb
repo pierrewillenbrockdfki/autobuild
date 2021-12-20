@@ -11,6 +11,15 @@ module Autobuild
         class NetworkAccessNeeded < RuntimeError; end
 
         class << self
+            # Sets the single_branch option globally for all Git importers
+            # This can can be overriden in the oporter options
+            attr_writer :single_branch
+
+            # Whether single_branch is enabled globally
+            def single_branch?
+                !!@single_branch
+            end
+
             # Sets the default alternates path used by all Git importers
             #
             # Setting it explicitly overrides any value we get from the
@@ -152,7 +161,7 @@ module Autobuild
                                                     repository_id: nil,
                                                     source_id: nil,
                                                     with_submodules: false,
-                                                    single_branch: false
+                                                    single_branch: Git.single_branch?
             if gitopts[:branch] && branch
                 raise ConfigException, "git branch specified with both the option hash "\
                     "and the explicit parameter"
